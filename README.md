@@ -1,2 +1,14 @@
 # HappyGraph
-A fast, light and happy Java library for undirected or directed weighted graphs which supports up to 65535 unique nodes. The Node, Edge and Graph classes can be easily extended to provide extra functionality if required.
+A fast, light and happy Java library for directed or undirected weighted graphs which supports up to 65535 unique nodes. The Node, Edge and Graph classes can be easily extended to provide extra functionality if required.
+
+A graph is a fundamental structure in computer science which consists of three entities, a node, an edge and a vertex. A node is a single unit within the graph which may abstractly represent anything, such as a city, a word, a person etc. An edge represents a relationship between two nodes. More than one edge may contain the same node, a node may not be contained in any edge, and an edge can connect a node with itself. A graph is just a set of nodes and edges.
+
+There are two types of graphs, directed and undirected. In a directed graph, the edge connecting node A to node B is not the same as the edge connecting node B to node A. In an undirected graph these two edges are the same. Hence in undirected graphs edges are two-way where as in directed graphs edges are one-way.
+
+In HappyGraph a node can have an arbitrary name and an edge can have an arbitrary weight value associated with it to represent anything for example distance between two cities.
+
+A single graph can only generate 65535 total nodes, regardless of how many nodes have been created and then destroyed. Beyond this number, it is not guaranteed that the graph will function as intended, for example two nodes which are actually different may be treated as the same inside the graph. This is intended behaviour and has to do with the way the graph was designed to be fast. Each node is uniquely identified by a short data type (16 bits). The graph contains a counter short data type which keeps track of which number to assign to the next node, every time a new node is created the counter is incremented.  An edge is uniquely identified by an int data type (32 bits) which is a composite of the bits from the identifiers of the two connecting nodes. This design along with the use of hashmaps to store the nodes and edges is what makes HappyGraph fast and light.
+
+To use this library just download the package and add it to your project. You should be able to use the graph directly from the Graph class, you should not have to create your own Nodes and Edges, although you may want to keep references to them. You may refer to the class Main to see example usage. You might wish to extend any of the classes provided to write your own additional functionality such as getting all neighbours of a particular node, or allowing a node to hold extra data in addition to just a name.
+
+If you have any questions feel free to email aaronzimmermann92@gmail.com

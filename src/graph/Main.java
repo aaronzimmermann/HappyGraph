@@ -5,23 +5,23 @@ import java.util.Iterator;
 public class Main {
 	
 	/**
-	 * Example usage
+	 * This class demonstrates example usage of the Graph. It is not required to use the graph.
 	 * @param args
 	 */
 	public static void main(String[] args) {
 		
-		// Create a new Graph
-		Graph g = new Graph();
+		// Create a new undirected Graph
+		Graph g = new Graph(false);
 		
 		// Create some new nodes
-		Node n1 = g.addNode("NSW");
-		Node n3 = g.addNode("VIC");
-		Node n8 = g.addNode("QLD");
-		Node n6 = g.addNode("WA ");
-		Node n5 = g.addNode("SA ");
-		Node n4 = g.addNode("TAS");
-		Node n7 = g.addNode("NT ");
-		Node n2 = g.addNode("ACT");		
+		Node n1 = g.createNode("NSW");
+		Node n3 = g.createNode("VIC");
+		Node n8 = g.createNode("QLD");
+		Node n6 = g.createNode("WA ");
+		Node n5 = g.createNode("SA ");
+		Node n4 = g.createNode("TAS");
+		Node n7 = g.createNode("NT ");
+		Node n2 = g.createNode("ACT");		
 		
 		// Create some edges
 		Edge e1 = g.addEdge(n1, n4);
@@ -44,6 +44,7 @@ public class Main {
 		g.setEdgeWeight(e8, 6);
 		
 		// Iterate through all nodes
+		System.out.println("Nodes:");
 		Iterator<Node> itern = g.getNodeIter();
 		while(itern.hasNext()) {
 			Node n = itern.next();
@@ -51,6 +52,7 @@ public class Main {
 		}
 		
 		// Iterate through all edges
+		System.out.println("\nEdges:");
 		Iterator<Edge> itere = g.getEdgeIter();
 		while(itere.hasNext()) {
 			Edge e = itere.next();

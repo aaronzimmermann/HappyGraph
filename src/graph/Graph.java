@@ -5,16 +5,11 @@ import java.util.HashSet;
 import java.util.Iterator;
 
 /**
- * Contains a set of nodes and edges.
+ * A graph contains a set of nodes and edges.
  * @author Aaron Zimmermann
  *
  */
 public class Graph {
-	
-	/**
-	 * If true then the graph is directed. If false then the graph is undirected.
-	 */
-	private static final boolean IS_GRAPH_DIRECTED = false;
 	
 	/**
 	 * The default weight of an edge.
@@ -22,35 +17,56 @@ public class Graph {
 	private static final double DEFAULT_WEIGHT = 1.0;
 	
 	/**
-	 * Nodes are stored here.
+	 * All created nodes are stored here.
 	 */
 	protected HashSet<Node> nodes = new HashSet<Node>();
 	
 	/**
-	 * Edges are stored here.
+	 * All created edges are stored here.
 	 */
 	protected HashSet<Edge> edges = new HashSet<Edge>();
 	
 	/**
-	 * Weights are stored here. We map the longHashCode of an edge to it's weight.
+	 * Edge weights are stored here. We map the longHashCode of an edge to it's weight.
 	 */
 	protected HashMap<Integer, Double> weights = new HashMap<Integer, Double>();
 	
 	/**
-	 * CTOR
+	 * If true then the graph is directed. If false then the graph is undirected.
 	 */
-	public Graph() {
-		
+	private boolean isDirectedGraph = false;
+	
+	/**
+	 * Keeps track of the next ID to be assigned to a node.
+	 */
+	private short nodeIdCounter = Short.MIN_VALUE;
+	
+	/**
+	 * CTOR
+	 * Creates a new graph.
+	 */
+	public Graph(boolean p_isDirectedGraph) {
+		isDirectedGraph = p_isDirectedGraph;
 	}
 	
 	/**
-	 * Creates a node with the given name then adds it to the graph.
-	 * Note that we can only create 65535 nodes unless we reset the node counter.
-	 * @param p_name The name for the graph.
+	 * Generates a new node id and returns the result.
+	 * This method should only be used inside the CTOR of Node.
+	 * @return The next node id.
+	 */
+	public short getNextNodeID() {
+		return nodeIdCounter++;
+	}
+	
+	/**
+	 * Creates a node with the given name and adds it to the graph.
+	 * The node id will be calculated and assigned to the new node.
+	 * Note that you can only create 65535 nodes per graph.
+	 * @param p_name An arbitrary name for the node. This is optional.
 	 * @return The new node object.
 	 */
-	public Node addNode(String p_name) {
-		Node n = new Node(p_name);
+	public Node createNode(String p_name) {
+		Node n = new Node(p_name, this);
 		addNode(n);
 		return n;
 	}
@@ -64,9 +80,10 @@ public class Graph {
 	}
 	
 	/**
-	 * Checks if the given node is already in the graph.
-	 * @param p_node A node.
-	 * @return If the node is in the graph.
+	 * Checks if the given node is already in the graph. 
+	 * Returns true if the given node is in the graph.
+	 * @param p_node A given node.
+	 * @return If the given node is in the graph.
 	 */
 	public boolean hasNode(Node p_node) {
 		return nodes.contains(p_node);
@@ -83,6 +100,7 @@ public class Graph {
 	
 	/***
 	 * Return an iterator for the nodes.
+	 * You can use this if you need to iterate through the nodes.
 	 * @return The iterator for the nodes.
 	 */
 	public Iterator<Node> getNodeIter() {
@@ -99,15 +117,18 @@ public class Graph {
 	
 	/**
 	 * Adds an edge to the graph connecting the two input nodes and sets the default weight.
-	 * Note that if the edge is already in the graph it will not be added again, but the weight will be set to the default weight.
+	 * Note that if the edge is already in the graph it will not be added again and the weight will be unchanged.
 	 * @param p_a A node.
 	 * @param p_b A node.
 	 * @return The edge object.
 	 */
 	public Edge addEdge(Node p_a, Node p_b) {
 		Edge edge = makeEdge(p_a, p_b);
-		edges.add(edge);
-		weights.put(edge.hashCode(), DEFAULT_WEIGHT);
+		if(edges.add(edge)) {
+			
+			// The weight is only updated if the edge was not in the graph
+			weights.put(edge.hashCode(), DEFAULT_WEIGHT);
+		}
 		return edge;
 	}
 	
@@ -154,6 +175,7 @@ public class Graph {
 	
 	/***
 	 * Return an iterator for the edges.
+	 * You can use this if you need to iterate through the nodes.
 	 * @return The iterator for the edges.
 	 */
 	public Iterator<Edge> getEdgeIter() {
@@ -174,6 +196,9 @@ public class Graph {
 	 * @param p_weight The new weight of this edge.
 	 */
 	public void setEdgeWeight(Node p_a, Node p_b, double p_weight) {
+		
+		// We need to use the makeEdge method to make a new edge
+		// So we can ensure we generate an edge with consistent hashCodes
 		Edge edge = makeEdge(p_a, p_b);
 		int id = edge.hashCode();
 		weights.put(id, p_weight);
@@ -231,14 +256,14 @@ public class Graph {
 	
 	/**
 	 * A factory method to create edge objects.
-	 * If the graph is directed then we make the first node the source node and the second node the target node.
-	 * If the graph is undirected then we make the node with the lowest if the source node, and the other node the target node.
+	 * If the graph is directed then we make the first input node the source node and the second input node the target node.
+	 * If the graph is undirected then we make the node with the lowest id the source node, and the other node the target node.
 	 * @param p_a A node.
 	 * @param p_b A node.
 	 * @return An edge connecting the two nodes.
 	 */
 	protected Edge makeEdge(Node p_a, Node p_b) {
-		if(p_a.hashCode() > p_b.hashCode() && !IS_GRAPH_DIRECTED) {
+		if(!isDirectedGraph && p_a.hashCode() > p_b.hashCode()) {
 			return new Edge(p_b, p_a);
 		} else {
 			return new Edge(p_a, p_b);
